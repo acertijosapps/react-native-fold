@@ -1,7 +1,19 @@
-import { TurboModuleRegistry, type TurboModule } from 'react-native';
+import { type CodegenTypes, type TurboModule, TurboModuleRegistry } from 'react-native';
+
+export type NativeFoldEvent = {
+    isPresent: boolean;
+    isSeparating: boolean;
+    isHalfOpened: boolean;
+    orientation: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+};
 
 export interface Spec extends TurboModule {
-  multiply(a: number, b: number): number;
+    getFoldState(): NativeFoldEvent;
+    readonly onFoldChange: CodegenTypes.EventEmitter<NativeFoldEvent>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('Fold');
