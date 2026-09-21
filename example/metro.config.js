@@ -11,9 +11,9 @@ const root = path.resolve(__dirname, '..');
  * @type {import('metro-config').MetroConfig}
  */
 const config = withMetroConfig(getDefaultConfig(__dirname), {
-  root,
-  dirname: __dirname,
-  conditions: ['react-native-fold-source'],
+    root,
+    dirname: __dirname,
+    conditions: ['react-native-fold-source'],
 });
 
 module.exports = config;

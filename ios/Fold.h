@@ -1,5 +1,5 @@
 #import <FoldSpec/FoldSpec.h>
 
-@interface Fold : NSObject <NativeFoldSpec>
+@interface Fold : NativeFoldSpecBase <NativeFoldSpec>
 
 @end

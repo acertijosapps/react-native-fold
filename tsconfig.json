@@ -4,6 +4,7 @@
     "paths": {
       "react-native-fold": ["./src/index"]
     },
+    "allowUmdGlobalAccess": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "customConditions": [
