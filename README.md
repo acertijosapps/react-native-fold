@@ -6,6 +6,12 @@ from `androidx.window`; iOS reads hinge state from `UIHingeInteraction` (iOS 27.
 ## Installation
 
 ```sh
+yarn add react-native-fold
+```
+
+or with npm:
+
+```sh
 npm install react-native-fold
 ```
 
