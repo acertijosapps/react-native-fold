@@ -144,8 +144,12 @@ const MessageDetail = ({ message, onBack }: MessageDetailProps): React.JSX.Eleme
 };
 
 const InboxScreen = (): React.JSX.Element => {
+    const fold = useFold();
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const selected = MESSAGES.find((message) => message.id === selectedId) ?? null;
+
+    const isBook =
+        fold != null && fold.isSeparating && fold.isHalfOpened && fold.orientation === 'vertical';
 
     const list = (
         <MessageList
@@ -154,24 +158,32 @@ const InboxScreen = (): React.JSX.Element => {
             onSelect={setSelectedId}
         />
     );
+    const detail = <MessageDetail message={selected} />;
 
     return (
         <View style={styles.screen}>
             <FoldStatusBar />
-            <FoldPane
-                primary={list}
-                secondary={<MessageDetail message={selected} />}
-                fallback={
-                    selected != null ? (
-                        <MessageDetail
-                            message={selected}
-                            onBack={() => setSelectedId(null)}
-                        />
-                    ) : (
-                        list
-                    )
-                }
-            />
+            {isBook ? (
+                <View style={styles.book}>
+                    <View style={styles.bookMaster}>{list}</View>
+                    <View style={styles.bookDetail}>{detail}</View>
+                </View>
+            ) : (
+                <FoldPane
+                    primary={list}
+                    secondary={detail}
+                    fallback={
+                        selected != null ? (
+                            <MessageDetail
+                                message={selected}
+                                onBack={() => setSelectedId(null)}
+                            />
+                        ) : (
+                            list
+                        )
+                    }
+                />
+            )}
         </View>
     );
 };
@@ -265,6 +277,18 @@ const styles = StyleSheet.create({
     detailEmptyText: {
         fontSize: 15,
         color: '#94a3b8',
+    },
+    book: {
+        flex: 1,
+        flexDirection: 'row',
+    },
+    bookMaster: {
+        flex: 4,
+        borderRightWidth: StyleSheet.hairlineWidth,
+        borderRightColor: '#e2e8f0',
+    },
+    bookDetail: {
+        flex: 6,
     },
 });
 
