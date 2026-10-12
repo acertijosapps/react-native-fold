@@ -1,101 +1,91 @@
 # Contributing
 
-Contributions are always welcome, no matter how large or small!
-
-We want this community to be friendly and respectful to each other. Please follow it in all your interactions with the project. Before contributing, please read the [code of conduct](./CODE_OF_CONDUCT.md).
+Contributions are welcome. Keep changes small, focused, and traceable.
 
 ## Development workflow
 
-This project is a monorepo managed using [Yarn workspaces](https://yarnpkg.com/features/workspaces). It contains the following packages:
+This project is a monorepo managed with [Yarn workspaces](https://yarnpkg.com/features/workspaces):
 
 - The library package in the root directory.
 - An example app in the `example/` directory.
 
-To get started with the project, make sure you have the correct version of [Node.js](https://nodejs.org/) installed. See the [`.nvmrc`](./.nvmrc) file for the version used in this project.
-
-Run `yarn` in the root directory to install the required dependencies for each package:
+Use the Node.js version in [`.nvmrc`](./.nvmrc). Install dependencies from the root:
 
 ```sh
 yarn
 ```
 
-> Since the project relies on Yarn workspaces, you cannot use [`npm`](https://github.com/npm/cli) for development without manually migrating.
+`yarn` also wires the repository git hooks (`core.hooksPath` → `.githooks/`) and builds the library.
 
-The [example app](/example/) demonstrates usage of the library. You need to run it to test any changes you make.
+> The project relies on Yarn workspaces; `npm` is not supported for development.
 
-It is configured to use the local version of the library, so any changes you make to the library's source code will be reflected in the example app. Changes to the library's JavaScript code will be reflected in the example app without a rebuild, but native code changes will require a rebuild of the example app.
+The example app uses the local version of the library, so source changes are reflected there. JavaScript changes hot-reload; native changes require a rebuild.
 
-If you want to use Android Studio or Xcode to edit the native code, you can open the `example/android` or `example/ios` directories respectively in those editors. To edit the Objective-C or Swift files, open `example/ios/FoldExample.xcworkspace` in Xcode and find the source files at `Pods > Development Pods > react-native-fold`.
+To edit the native code in an IDE, open `example/ios/FoldExample.xcworkspace` in Xcode (sources under `Pods > Development Pods > react-native-fold`) or `example/android` in Android Studio (sources under `react-native-fold`).
 
-To edit the Java or Kotlin files, open `example/android` in Android studio and find the source files at `react-native-fold` under `Android`.
-
-You can use various commands from the root directory to work with the project.
-
-To start the packager:
+### Commands
 
 ```sh
-yarn example start
+yarn example start      # start the Metro bundler
+yarn example android    # run the example on Android
+yarn example ios        # run the example on iOS
+yarn typecheck          # type-check with TypeScript
+yarn lint               # lint with ESLint
+yarn lint --fix         # fix formatting
 ```
 
-To run the example app on Android:
+## Branching model
 
-```sh
-yarn example android
+Two permanent branches, both protected:
+
+- **`main`** — production. No direct pushes; changes land only through an approved Merge Request.
+- **`beta`** — release candidate.
+
+Temporary branches, always created from `beta`, in kebab-case:
+
+- `feat/<name>` · `fix/<name>` · `chore/<name>` → Merge Request **into `beta`**, deleted after merge.
+- `hotfix/<name>` is the only exception: created from `main`, MR into `main`, then back-merged into `beta`.
+
+One branch = one focused change.
+
+## Commits
+
+[Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>(<optional scope>)(!): <imperative description>
 ```
 
-To run the example app on iOS:
+Types: `feat` `fix` `docs` `style` `refactor` `perf` `test` `build` `ci` `chore` `revert`.
 
-```sh
-yarn example ios
-```
+[SemVer](https://semver.org/) mapping: `feat` → MINOR, `fix` → PATCH, breaking (`feat!` or `BREAKING CHANGE:`) → MAJOR.
 
-To confirm that the app is running with the new architecture, you can check the Metro logs for a message like this:
+The git hooks in [`.githooks/`](./.githooks) run for every commit:
 
-```sh
-Running "FoldExample" with {"fabric":true,"initialProps":{"concurrentRoot":true},"rootTag":1}
-```
+- `commit-msg` rejects messages that are not Conventional Commits.
+- `pre-commit` blocks direct commits on `main` and `beta`.
 
-Note the `"fabric":true` and `"concurrentRoot":true` properties.
+One-off bypass (not recommended): `git commit --no-verify`.
 
-Make sure your code passes TypeScript:
+## Changelog
 
-```sh
-yarn typecheck
-```
+Any change that affects behavior updates [`CHANGELOG.md`](./CHANGELOG.md) ([Keep a Changelog](https://keepachangelog.com/)): add the entry under `## [Sin liberar]` in the right category (Añadido · Cambiado · Corregido · Eliminado).
 
-To check for linting errors, run the following:
+## Merge Requests
 
-```sh
-yarn lint
-```
+When opening an MR:
 
-To fix formatting errors, run the following:
+- Target `beta` (or `main` only for `hotfix`).
+- Keep it small and focused on one change.
+- Assign at least one reviewer; merge requires their approval.
+- Link the related work item for traceability.
+- Gates must be green: `yarn typecheck`, `yarn lint`.
+- Include the `CHANGELOG.md` entry.
 
-```sh
-yarn lint --fix
-```
+## Releasing (`beta` → `main`)
 
-
-
-### Scripts
-
-The `package.json` file contains various scripts for common tasks:
-
-- `yarn`: setup project by installing dependencies.
-- `yarn typecheck`: type-check files with TypeScript.
-  - `yarn lint`: lint files with [ESLint](https://eslint.org/).
-    - `yarn example start`: start the Metro server for the example app.
-- `yarn example android`: run the example app on Android.
-- `yarn example ios`: run the example app on iOS.
-  
-### Sending a pull request
-
-> **Working on your first pull request?** You can learn how from this _free_ series: [How to Contribute to an Open Source Project on GitHub](https://app.egghead.io/playlists/how-to-contribute-to-an-open-source-project-on-github).
-
-When you're sending a pull request:
-
-- Prefer small pull requests focused on one change.
-- Verify that linters and tests are passing.
-- Review the documentation to make sure it looks good.
-- Follow the pull request template when opening a pull request.
-- For pull requests that change the API or implementation, discuss with maintainers first by opening an issue.
+1. Confirm gates are green on `beta`.
+2. Decide the SemVer bump from the commits since the last tag.
+3. Update `version` in `package.json`.
+4. Rename the `## [Sin liberar]` section of the changelog to `## [X.Y.Z] - YYYY-MM-DD` and open a fresh empty one.
+5. Tag `vX.Y.Z` on `main`.
