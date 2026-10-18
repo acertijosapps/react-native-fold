@@ -44,7 +44,8 @@ type FoldState = {
 } | null;
 ```
 
-`bounds` is always in dp; the density division happens in Kotlin.
+`bounds` is always in dp: Android divides by density in Kotlin; iOS points are already
+density-independent.
 
 `FoldPane` splits only when `isSeparating && isHalfOpened && orientation === 'horizontal'`,
 and falls back when the hinge touches a window edge. Panels are laid out around the
@@ -53,11 +54,12 @@ hinge bounds with a spacer of the hinge height; it never splits 50/50.
 ## Platform support
 
 - Android: `WindowInfoTrackerCallbackAdapter` + `FoldingFeature` (`androidx.window` 1.5.1).
-- iOS 27.1+: `UIHingeInteraction` on the key window. `UIHinge` exposes only `status`
-  (`Closed`/`PartiallyOpen`/`FullyOpen`) and `angle`, so `isSeparating`/`isHalfOpened`
-  map from `PartiallyOpen`, `orientation` is reported as `'vertical'` (iPhone Duo hinge),
-  and `bounds` is zero (iOS provides no hinge geometry). Below iOS 27.1, `useFold()` is `null`.
-  Because the hinge is vertical, `FoldPane` does not split on iOS; read `useFold()` directly.
+- iOS 27.1+: `UIHingeInteraction` for the hinge status plus `UIViewReservedRegion`
+  (`divisionRegionKind`) for the geometry. `bounds` is the division region frame, including
+  the margins iOS reserves around the fold for interactive content. `orientation` comes from
+  the region's aspect, `isSeparating` from the region being active and `isHalfOpened` from
+  `PartiallyOpen`. On the cover display there is no division region and `useFold()` is `null`;
+  below iOS 27.1 it is always `null`.
 
 ## License
 

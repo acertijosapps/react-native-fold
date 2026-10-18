@@ -165,7 +165,8 @@ const InboxScreen = (): React.JSX.Element => {
             <FoldStatusBar />
             {isBook ? (
                 <View style={styles.book}>
-                    <View style={styles.bookMaster}>{list}</View>
+                    <View style={{ width: fold.bounds.x }}>{list}</View>
+                    <View style={[styles.hinge, { width: fold.bounds.width }]} />
                     <View style={styles.bookDetail}>{detail}</View>
                 </View>
             ) : (
@@ -282,13 +283,11 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
     },
-    bookMaster: {
-        flex: 4,
-        borderRightWidth: StyleSheet.hairlineWidth,
-        borderRightColor: '#e2e8f0',
+    hinge: {
+        backgroundColor: '#e2e8f0',
     },
     bookDetail: {
-        flex: 6,
+        flex: 1,
     },
 });
 

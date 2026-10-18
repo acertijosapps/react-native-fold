@@ -2,9 +2,27 @@
 
 #import <UIKit/UIKit.h>
 
+@interface FoldHostView : UIView
+@property (nonatomic, copy) void (^onLayout)(void);
+@end
+
+@implementation FoldHostView
+
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+  if (self.onLayout != nil) {
+    self.onLayout();
+  }
+}
+
+@end
+
 @interface Fold ()
-@property (nonatomic, copy) NSDictionary *lastState;
+@property (atomic, copy) NSDictionary *lastState;
+@property (nonatomic, strong) FoldHostView *hostView;
 @property (nonatomic, strong) id hingeInteraction;
+@property (nonatomic, strong) id hinge;
 @property (nonatomic, assign) NSInteger attachAttempts;
 @end
 
@@ -60,8 +78,8 @@
 
 - (void)attachHinge API_AVAILABLE(ios(27.1))
 {
-  UIWindow *host = [self keyWindow];
-  if (host == nil) {
+  UIWindow *window = [self keyWindow];
+  if (window == nil) {
     if (self.attachAttempts >= 20) {
       return;
     }
@@ -74,35 +92,68 @@
   }
 
   __weak __typeof(self) weakSelf = self;
+  FoldHostView *hostView = [[FoldHostView alloc] initWithFrame:window.bounds];
+  hostView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  hostView.userInteractionEnabled = NO;
+  hostView.backgroundColor = UIColor.clearColor;
+  hostView.onLayout = ^{
+    [weakSelf refreshState];
+  };
+  self.hostView = hostView;
+  [window insertSubview:hostView atIndex:0];
+
   UIHingeInteraction *interaction =
     [[UIHingeInteraction alloc] initWithUpdateHandler:^(UIHingeInteraction *i, UIHingeInteractionUpdate *update) {
-      [weakSelf handleUpdate:update];
+      weakSelf.hinge = update.hinge;
+      [weakSelf refreshState];
     }];
   self.hingeInteraction = interaction;
-  [host addInteraction:interaction];
+  [hostView addInteraction:interaction];
 }
 
-- (void)handleUpdate:(UIHingeInteractionUpdate *)update API_AVAILABLE(ios(27.1))
+- (void)refreshState API_AVAILABLE(ios(27.1))
 {
-  UIHinge *hinge = update.hinge;
-  NSDictionary *state;
-  if (hinge == nil || hinge.status == UIHingeStatusUnknown) {
-    state = [Fold absentState];
-  } else {
-    BOOL isHalfOpened = (hinge.status == UIHingeStatusPartiallyOpen);
-    state = @{
-      @"isPresent": @(YES),
-      @"isSeparating": @(isHalfOpened),
-      @"isHalfOpened": @(isHalfOpened),
-      @"orientation": @"vertical",
-      @"x": @(0),
-      @"y": @(0),
-      @"width": @(0),
-      @"height": @(0)
-    };
+  NSDictionary *state = [self currentState];
+  if ([state isEqualToDictionary:self.lastState]) {
+    return;
   }
   self.lastState = state;
   [self emitOnFoldChange:state];
+}
+
+- (NSDictionary *)currentState API_AVAILABLE(ios(27.1))
+{
+  UIHinge *hinge = self.hinge;
+  UIView *view = self.hostView;
+  if (hinge == nil || hinge.status == UIHingeStatusUnknown || view.window == nil) {
+    return [Fold absentState];
+  }
+
+  NSArray<UIViewReservedRegion *> *regions =
+    [view reservedRegionsOfKind:[UIViewReservedRegionKind divisionRegionKind]
+                        options:UIViewReservedRegionQueryOptionsIncludeInactive];
+  UIViewReservedRegion *region = regions.firstObject;
+  for (UIViewReservedRegion *candidate in regions) {
+    if (candidate.isActive) {
+      region = candidate;
+      break;
+    }
+  }
+  if (region == nil) {
+    return [Fold absentState];
+  }
+
+  CGRect frame = region.frame;
+  return @{
+    @"isPresent": @(YES),
+    @"isSeparating": @(region.isActive),
+    @"isHalfOpened": @(hinge.status == UIHingeStatusPartiallyOpen),
+    @"orientation": CGRectGetHeight(frame) >= CGRectGetWidth(frame) ? @"vertical" : @"horizontal",
+    @"x": @(CGRectGetMinX(frame)),
+    @"y": @(CGRectGetMinY(frame)),
+    @"width": @(CGRectGetWidth(frame)),
+    @"height": @(CGRectGetHeight(frame))
+  };
 }
 
 - (NSDictionary *)getFoldState

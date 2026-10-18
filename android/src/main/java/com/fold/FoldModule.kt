@@ -31,7 +31,7 @@ class FoldModule(reactContext: ReactApplicationContext) :
 
   private val executor: Executor = ContextCompat.getMainExecutor(reactContext)
 
-  private var lastData = FoldData(false, false, false, "horizontal", 0.0, 0.0, 0.0, 0.0)
+  @Volatile private var lastData = FoldData(false, false, false, "horizontal", 0.0, 0.0, 0.0, 0.0)
 
   private val consumer = Consumer<WindowLayoutInfo> { layoutInfo ->
     lastData = buildData(layoutInfo)
