@@ -12,6 +12,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 ### Corregido
 
 ### Eliminado
+- Carpeta `.github/` de la plantilla (workflow de CI y plantillas de issues de GitHub); el repositorio vive en GitLab.
 
 ## [1.0.0] - 2026-10-17
 
