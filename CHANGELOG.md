@@ -12,9 +12,11 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 - Enforcement de versionado con git-hooks nativos en `.githooks/` (Conventional Commits y bloqueo de commits directos sobre `main`/`beta`).
 
 ### Cambiado
+- `peerDependencies` exige `react-native` >= 0.80.0 y `react` >= 19.1.0 (mínimo para `CodegenTypes.EventEmitter`).
 - Paquete publicado como `@acertijosapps/react-native-fold` (acceso público), con autor AcertijosApps y repositorio en GitLab.
 
 ### Corregido
+- iOS implementa `invalidate`: al recargar JS retira la vista anfitriona y la interacción de bisagra en vez de acumularlas.
 - `FoldPane` mide su posición en la ventana y alinea los paneles con la bisagra aunque no empiece en el borde superior.
 - iOS compila con Xcode anterior a 27.1: el código de la bisagra se excluye y `useFold()` devuelve `null`.
 - `FoldProvider` relee `getFoldState()` tras suscribirse para no perder el primer evento nativo.

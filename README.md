@@ -8,6 +8,11 @@ from `androidx.window`; iOS reads hinge state from `UIHingeInteraction` (iOS 27.
 > With an older Xcode the library still compiles, but the hinge APIs are left out and
 > `useFold()` is always `null` on iOS, even on an iPhone Duo.
 
+## Requirements
+
+- React Native **0.80 or later** with the New Architecture (this is a Turbo Module).
+- React 19.1 or later.
+
 ## Installation
 
 ```sh
