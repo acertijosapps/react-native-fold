@@ -15,6 +15,7 @@ const FoldProvider = ({ children }: FoldProviderProps): React.JSX.Element => {
         const subscription = Fold.onFoldChange((event) => {
             setState(toFoldState(event));
         });
+        setState(toFoldState(Fold.getFoldState()));
 
         return () => {
             subscription.remove();
