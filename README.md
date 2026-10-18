@@ -1,32 +1,48 @@
-# react-native-fold
+# @acertijosapps/react-native-fold
 
-Foldable detection (tabletop/flex) for React Native. Android reads folding posture
+Foldable detection (tabletop/book) for React Native. Android reads folding posture
 from `androidx.window`; iOS reads hinge state from `UIHingeInteraction` (iOS 27.1+).
+
+> [!WARNING]
+> iOS detection requires building your app with **Xcode 27.1 or later** (iOS 27.1 SDK).
+> With an older Xcode the library still compiles, but the hinge APIs are left out and
+> `useFold()` is always `null` on iOS, even on an iPhone Duo.
+
+## Requirements
+
+- React Native **0.80 or later** with the New Architecture (this is a Turbo Module).
+- React 19.1 or later.
 
 ## Installation
 
 ```sh
-yarn add react-native-fold
+yarn add @acertijosapps/react-native-fold
 ```
 
 or with npm:
 
 ```sh
-npm install react-native-fold
+npm install @acertijosapps/react-native-fold
 ```
 
 ## Usage
 
 ```tsx
-import { FoldProvider, FoldPane, useFold } from 'react-native-fold';
+import { FoldBookPane, FoldPane, FoldProvider } from '@acertijosapps/react-native-fold';
 
 function App() {
   return (
     <FoldProvider>
-      <FoldPane
-        primary={<Top />}
-        secondary={<Bottom />}
-        fallback={<Single />}
+      <FoldBookPane
+        start={<Left />}
+        end={<Right />}
+        fallback={
+          <FoldPane
+            primary={<Top />}
+            secondary={<Bottom />}
+            fallback={<Single />}
+          />
+        }
       />
     </FoldProvider>
   );
@@ -48,8 +64,14 @@ type FoldState = {
 density-independent.
 
 `FoldPane` splits only when `isSeparating && isHalfOpened && orientation === 'horizontal'`,
-and falls back when the hinge touches a window edge. Panels are laid out around the
-hinge bounds with a spacer of the hinge height; it never splits 50/50.
+and falls back when the hinge is not strictly inside the pane. It measures its own position
+in the window, so panels line up with the hinge even below a header; the spacer takes the
+hinge height and it never splits 50/50.
+
+`FoldBookPane` is the book-posture counterpart: it splits `start` | `end` side by side only
+when `isSeparating && isHalfOpened && orientation === 'vertical'`, measures its own x offset
+in the window and reserves `bounds.width` between both panels (the fold plus its margins on
+iOS, the fold line on Android). Nest `FoldPane` as its `fallback` to cover both postures.
 
 ## Platform support
 

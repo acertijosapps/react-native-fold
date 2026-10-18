@@ -2,6 +2,12 @@
 
 #import <UIKit/UIKit.h>
 
+#if __has_include(<UIKit/UIHingeInteraction.h>) && __has_include(<UIKit/UIViewReservedRegion.h>)
+#define FOLD_HAS_HINGE_SDK 1
+#else
+#define FOLD_HAS_HINGE_SDK 0
+#endif
+
 @interface FoldHostView : UIView
 @property (nonatomic, copy) void (^onLayout)(void);
 @end
@@ -24,6 +30,7 @@
 @property (nonatomic, strong) id hingeInteraction;
 @property (nonatomic, strong) id hinge;
 @property (nonatomic, assign) NSInteger attachAttempts;
+@property (nonatomic, assign) BOOL isInvalidated;
 @end
 
 @implementation Fold
@@ -33,12 +40,14 @@
   if (self = [super init]) {
     _lastState = [Fold absentState];
     _attachAttempts = 0;
+#if FOLD_HAS_HINGE_SDK
     if (@available(iOS 27.1, *)) {
       __weak __typeof(self) weakSelf = self;
       dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf attachHinge];
       });
     }
+#endif
   }
   return self;
 }
@@ -56,6 +65,8 @@
     @"height": @(0)
   };
 }
+
+#if FOLD_HAS_HINGE_SDK
 
 - (UIWindow *)keyWindow
 {
@@ -78,6 +89,9 @@
 
 - (void)attachHinge API_AVAILABLE(ios(27.1))
 {
+  if (self.isInvalidated) {
+    return;
+  }
   UIWindow *window = [self keyWindow];
   if (window == nil) {
     if (self.attachAttempts >= 20) {
@@ -154,6 +168,24 @@
     @"width": @(CGRectGetWidth(frame)),
     @"height": @(CGRectGetHeight(frame))
   };
+}
+
+#endif
+
+- (void)invalidate
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    self.isInvalidated = YES;
+    FoldHostView *hostView = self.hostView;
+    hostView.onLayout = nil;
+    if (self.hingeInteraction != nil) {
+      [hostView removeInteraction:self.hingeInteraction];
+    }
+    [hostView removeFromSuperview];
+    self.hostView = nil;
+    self.hingeInteraction = nil;
+    self.hinge = nil;
+  });
 }
 
 - (NSDictionary *)getFoldState
