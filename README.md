@@ -8,6 +8,15 @@ from `androidx.window`; iOS reads hinge state from `UIHingeInteraction` (iOS 27.
 > With an older Xcode the library still compiles, but the hinge APIs are left out and
 > `useFold()` is always `null` on iOS, even on an iPhone Duo.
 
+## Screenshots
+
+The example app on a half-opened device. The dark bar prints what `useFold()` returns.
+
+| | Book posture · `FoldBookPane` | Tabletop posture · `FoldPane` |
+|---|---|---|
+| **iOS** · iPhone Duo | <img src="https://gitlab.com/acertijoslibs/rnfold/-/raw/main/docs/screenshots/ios-book.png" width="360" alt="iPhone Duo half-opened with a vertical hinge: list and detail side by side with the 40 pt hinge region reserved" /> | <img src="https://gitlab.com/acertijoslibs/rnfold/-/raw/main/docs/screenshots/ios-tabletop.png" width="260" alt="iPhone Duo half-opened and rotated: list above and detail below the hinge" /> |
+| **Android** · Pixel 10 Pro Fold | <img src="https://gitlab.com/acertijoslibs/rnfold/-/raw/main/docs/screenshots/android-book.png" width="320" alt="Pixel Fold half-opened with a vertical hinge: list and detail side by side at the fold line" /> | <img src="https://gitlab.com/acertijoslibs/rnfold/-/raw/main/docs/screenshots/android-tabletop.png" width="320" alt="Pixel Fold in tabletop posture: list above and detail below the hinge" /> |
+
 ## Requirements
 
 - React Native **0.80 or later** with the New Architecture (this is a Turbo Module).
