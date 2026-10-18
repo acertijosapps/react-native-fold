@@ -6,6 +6,16 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 ## [Sin liberar]
 
 ### Añadido
+
+### Cambiado
+
+### Corregido
+
+### Eliminado
+
+## [1.0.0] - 2026-10-17
+
+### Añadido
 - `<FoldBookPane start end fallback />` para la postura libro (bisagra vertical): divide lado a lado y reserva `bounds.width` entre ambos paneles.
 - API `FoldProvider`, `useFold()` y `<FoldPane primary secondary fallback />` sobre el contrato `FoldState`.
 - Detección de plegado en Android con `FoldingFeature` vía `WindowInfoTrackerCallbackAdapter` (`androidx.window` 1.5.1); `bounds` convertidos a dp en Kotlin.
@@ -24,8 +34,6 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 - `FoldProvider` relee `getFoldState()` tras suscribirse para no perder el primer evento nativo.
 - iOS emite solo cuando cambia el estado, no en cada cambio de ángulo de la bisagra.
 - (example) Adopción de UIScene lifecycle para que la app corra en iOS 27.
-
-### Eliminado
 
 <!--
  Al promover beta → main, renombra la sección de arriba a la versión liberada:
