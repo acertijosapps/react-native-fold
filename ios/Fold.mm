@@ -2,6 +2,12 @@
 
 #import <UIKit/UIKit.h>
 
+#if __has_include(<UIKit/UIHingeInteraction.h>) && __has_include(<UIKit/UIViewReservedRegion.h>)
+#define FOLD_HAS_HINGE_SDK 1
+#else
+#define FOLD_HAS_HINGE_SDK 0
+#endif
+
 @interface FoldHostView : UIView
 @property (nonatomic, copy) void (^onLayout)(void);
 @end
@@ -33,12 +39,14 @@
   if (self = [super init]) {
     _lastState = [Fold absentState];
     _attachAttempts = 0;
+#if FOLD_HAS_HINGE_SDK
     if (@available(iOS 27.1, *)) {
       __weak __typeof(self) weakSelf = self;
       dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf attachHinge];
       });
     }
+#endif
   }
   return self;
 }
@@ -56,6 +64,8 @@
     @"height": @(0)
   };
 }
+
+#if FOLD_HAS_HINGE_SDK
 
 - (UIWindow *)keyWindow
 {
@@ -155,6 +165,8 @@
     @"height": @(CGRectGetHeight(frame))
   };
 }
+
+#endif
 
 - (NSDictionary *)getFoldState
 {
