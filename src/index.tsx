@@ -1,3 +1,5 @@
+export type { FoldBookPaneProps } from './FoldBookPane';
+export { default as FoldBookPane } from './FoldBookPane';
 export type { FoldPaneProps } from './FoldPane';
 export { default as FoldPane } from './FoldPane';
 export type { FoldProviderProps } from './FoldProvider';
