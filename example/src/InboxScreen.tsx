@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { FoldPane, useFold } from '@acertijosapps/react-native-fold';
+import { FoldBookPane, FoldPane, useFold } from '@acertijosapps/react-native-fold';
 
 type Message = {
     id: string;
@@ -144,12 +144,8 @@ const MessageDetail = ({ message, onBack }: MessageDetailProps): React.JSX.Eleme
 };
 
 const InboxScreen = (): React.JSX.Element => {
-    const fold = useFold();
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const selected = MESSAGES.find((message) => message.id === selectedId) ?? null;
-
-    const isBook =
-        fold != null && fold.isSeparating && fold.isHalfOpened && fold.orientation === 'vertical';
 
     const list = (
         <MessageList
@@ -163,28 +159,26 @@ const InboxScreen = (): React.JSX.Element => {
     return (
         <View style={styles.screen}>
             <FoldStatusBar />
-            {isBook ? (
-                <View style={styles.book}>
-                    <View style={{ width: fold.bounds.x }}>{list}</View>
-                    <View style={[styles.hinge, { width: fold.bounds.width }]} />
-                    <View style={styles.bookDetail}>{detail}</View>
-                </View>
-            ) : (
-                <FoldPane
-                    primary={list}
-                    secondary={detail}
-                    fallback={
-                        selected != null ? (
-                            <MessageDetail
-                                message={selected}
-                                onBack={() => setSelectedId(null)}
-                            />
-                        ) : (
-                            list
-                        )
-                    }
-                />
-            )}
+            <FoldBookPane
+                start={list}
+                end={detail}
+                fallback={
+                    <FoldPane
+                        primary={list}
+                        secondary={detail}
+                        fallback={
+                            selected != null ? (
+                                <MessageDetail
+                                    message={selected}
+                                    onBack={() => setSelectedId(null)}
+                                />
+                            ) : (
+                                list
+                            )
+                        }
+                    />
+                }
+            />
         </View>
     );
 };
@@ -278,16 +272,6 @@ const styles = StyleSheet.create({
     detailEmptyText: {
         fontSize: 15,
         color: '#94a3b8',
-    },
-    book: {
-        flex: 1,
-        flexDirection: 'row',
-    },
-    hinge: {
-        backgroundColor: '#e2e8f0',
-    },
-    bookDetail: {
-        flex: 1,
     },
 });
 
