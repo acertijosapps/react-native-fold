@@ -6,6 +6,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 ## [Sin liberar]
 
 ### Añadido
+- `<FoldBookPane start end fallback />` para la postura libro (bisagra vertical): divide lado a lado y reserva `bounds.width` entre ambos paneles.
 - API `FoldProvider`, `useFold()` y `<FoldPane primary secondary fallback />` sobre el contrato `FoldState`.
 - Detección de plegado en Android con `FoldingFeature` vía `WindowInfoTrackerCallbackAdapter` (`androidx.window` 1.5.1); `bounds` convertidos a dp en Kotlin.
 - Detección de plegado en iOS 27.1 con `UIHingeInteraction` y geometría de `UIViewReservedRegion` (`divisionRegionKind`): `bounds` con márgenes, `orientation` según la región e `isSeparating` según la región activa.

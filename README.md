@@ -28,15 +28,21 @@ npm install @acertijosapps/react-native-fold
 ## Usage
 
 ```tsx
-import { FoldProvider, FoldPane, useFold } from '@acertijosapps/react-native-fold';
+import { FoldBookPane, FoldPane, FoldProvider } from '@acertijosapps/react-native-fold';
 
 function App() {
   return (
     <FoldProvider>
-      <FoldPane
-        primary={<Top />}
-        secondary={<Bottom />}
-        fallback={<Single />}
+      <FoldBookPane
+        start={<Left />}
+        end={<Right />}
+        fallback={
+          <FoldPane
+            primary={<Top />}
+            secondary={<Bottom />}
+            fallback={<Single />}
+          />
+        }
       />
     </FoldProvider>
   );
@@ -61,6 +67,11 @@ density-independent.
 and falls back when the hinge is not strictly inside the pane. It measures its own position
 in the window, so panels line up with the hinge even below a header; the spacer takes the
 hinge height and it never splits 50/50.
+
+`FoldBookPane` is the book-posture counterpart: it splits `start` | `end` side by side only
+when `isSeparating && isHalfOpened && orientation === 'vertical'`, measures its own x offset
+in the window and reserves `bounds.width` between both panels (the fold plus its margins on
+iOS, the fold line on Android). Nest `FoldPane` as its `fallback` to cover both postures.
 
 ## Platform support
 
