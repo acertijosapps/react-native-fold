@@ -21,7 +21,7 @@ yarn
 
 The example app uses the local version of the library, so source changes are reflected there. JavaScript changes hot-reload; native changes require a rebuild.
 
-To edit the native code in an IDE, open `example/ios/FoldExample.xcworkspace` in Xcode (sources under `Pods > Development Pods > react-native-fold`) or `example/android` in Android Studio (sources under `react-native-fold`).
+To edit the native code in an IDE, open `example/ios/FoldExample.xcworkspace` in Xcode (sources under `Pods > Development Pods > Fold`) or `example/android` in Android Studio (sources under `react-native-fold`).
 
 ### Commands
 

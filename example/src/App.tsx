@@ -1,4 +1,4 @@
-import { FoldProvider } from 'react-native-fold';
+import { FoldProvider } from '@acertijosapps/react-native-fold';
 
 import InboxScreen from './InboxScreen';
 

@@ -1,7 +1,7 @@
 {
-  "name": "react-native-fold",
+  "name": "@acertijosapps/react-native-fold",
   "version": "0.1.0",
-  "description": "Foldable detection (tabletop/flex) for React Native with androidx.window",
+  "description": "Foldable detection (tabletop/book) for React Native on Android and iOS",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {
@@ -45,16 +45,17 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bgoswaldo/react-native-fold.git"
+    "url": "git+https://gitlab.com/acertijoslibs/rnfold.git"
   },
-  "author": "Bryan Gomez <bgoswaldo@gmail.com> (https://github.com/bgoswaldo)",
+  "author": "AcertijosApps <acertijos.contacto@gmail.com> (https://acertijosapps.com/librerias/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bgoswaldo/react-native-fold/issues"
+    "url": "https://gitlab.com/acertijoslibs/rnfold/-/issues"
   },
-  "homepage": "https://github.com/bgoswaldo/react-native-fold#readme",
+  "homepage": "https://acertijosapps.com/librerias/",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "devDependencies": {
     "@eslint/compat": "^2.1.0",

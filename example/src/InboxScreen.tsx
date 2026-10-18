@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { FoldPane, useFold } from 'react-native-fold';
+import { FoldPane, useFold } from '@acertijosapps/react-native-fold';
 
 type Message = {
     id: string;
