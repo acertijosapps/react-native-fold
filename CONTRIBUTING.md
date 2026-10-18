@@ -32,6 +32,7 @@ yarn example ios        # run the example on iOS
 yarn typecheck          # type-check with TypeScript
 yarn lint               # lint with ESLint
 yarn lint --fix         # fix formatting
+yarn test               # run the Jest suite
 ```
 
 ## Branching model
@@ -79,7 +80,7 @@ When opening an MR:
 - Keep it small and focused on one change.
 - Assign at least one reviewer; merge requires their approval.
 - Link the related work item for traceability.
-- Gates must be green: `yarn typecheck`, `yarn lint`.
+- Gates must be green: `yarn typecheck`, `yarn lint`, `yarn test`.
 - Include the `CHANGELOG.md` entry.
 
 ## Releasing (`beta` → `main`)
