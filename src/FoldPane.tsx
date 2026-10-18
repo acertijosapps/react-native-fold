@@ -1,5 +1,5 @@
-import { type ReactNode } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { type HostInstance, StyleSheet, View } from 'react-native';
 
 import { useFold } from './useFold';
 
@@ -9,30 +9,55 @@ export type FoldPaneProps = {
     fallback: ReactNode;
 };
 
+type PaneFrame = {
+    y: number;
+    height: number;
+};
+
 const FoldPane = ({ primary, secondary, fallback }: FoldPaneProps): React.JSX.Element => {
     const fold = useFold();
-    const { height: windowHeight } = useWindowDimensions();
+    const paneRef = useRef<HostInstance>(null);
+    const [frame, setFrame] = useState<PaneFrame | null>(null);
 
-    if (
-        fold == null ||
-        !fold.isSeparating ||
-        !fold.isHalfOpened ||
-        fold.orientation !== 'horizontal'
-    ) {
-        return <>{fallback}</>;
-    }
+    const measure = useCallback(() => {
+        paneRef.current?.measureInWindow((_x, y, _width, height) => {
+            setFrame((current) =>
+                current != null && current.y === y && current.height === height
+                    ? current
+                    : { y, height },
+            );
+        });
+    }, []);
 
-    const { y, height } = fold.bounds;
+    useEffect(() => {
+        measure();
+    }, [fold, measure]);
 
-    if (y <= 0 || y + height >= windowHeight) {
-        return <>{fallback}</>;
-    }
+    const top = fold != null && frame != null ? fold.bounds.y - frame.y : 0;
+    const isSplit =
+        fold != null &&
+        frame != null &&
+        fold.isSeparating &&
+        fold.isHalfOpened &&
+        fold.orientation === 'horizontal' &&
+        top > 0 &&
+        top + fold.bounds.height < frame.height;
 
     return (
-        <View style={styles.container}>
-            <View style={{ height: y }}>{primary}</View>
-            <View style={{ height }} />
-            <View style={styles.fill}>{secondary}</View>
+        <View
+            ref={paneRef}
+            style={styles.container}
+            onLayout={measure}
+        >
+            {isSplit ? (
+                <>
+                    <View style={{ height: top }}>{primary}</View>
+                    <View style={{ height: fold.bounds.height }} />
+                    <View style={styles.fill}>{secondary}</View>
+                </>
+            ) : (
+                fallback
+            )}
         </View>
     );
 };
