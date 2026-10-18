@@ -6,10 +6,23 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 ## [Sin liberar]
 
 ### Añadido
+- Capturas de las posturas libro (`FoldBookPane`) y mesa (`FoldPane`) en iOS y Android en el README.
+
+### Cambiado
+
+### Corregido
+
+### Eliminado
+- Carpeta `.github/` de la plantilla (workflow de CI y plantillas de issues de GitHub); el repositorio vive en GitLab.
+
+## [1.0.0] - 2026-10-17
+
+### Añadido
 - `<FoldBookPane start end fallback />` para la postura libro (bisagra vertical): divide lado a lado y reserva `bounds.width` entre ambos paneles.
 - API `FoldProvider`, `useFold()` y `<FoldPane primary secondary fallback />` sobre el contrato `FoldState`.
 - Detección de plegado en Android con `FoldingFeature` vía `WindowInfoTrackerCallbackAdapter` (`androidx.window` 1.5.1); `bounds` convertidos a dp en Kotlin.
 - Detección de plegado en iOS 27.1 con `UIHingeInteraction` y geometría de `UIViewReservedRegion` (`divisionRegionKind`): `bounds` con márgenes, `orientation` según la región e `isSeparating` según la región activa.
+- Tests con Jest y Testing Library para `toFoldState`, `FoldPane`, `FoldBookPane` y `FoldProvider`.
 - Enforcement de versionado con git-hooks nativos en `.githooks/` (Conventional Commits y bloqueo de commits directos sobre `main`/`beta`).
 
 ### Cambiado
@@ -23,8 +36,6 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 - `FoldProvider` relee `getFoldState()` tras suscribirse para no perder el primer evento nativo.
 - iOS emite solo cuando cambia el estado, no en cada cambio de ángulo de la bisagra.
 - (example) Adopción de UIScene lifecycle para que la app corra en iOS 27.
-
-### Eliminado
 
 <!--
  Al promover beta → main, renombra la sección de arriba a la versión liberada:
