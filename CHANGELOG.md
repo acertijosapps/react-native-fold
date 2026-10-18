@@ -6,7 +6,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 ## [Sin liberar]
 
 ### Añadido
-- Capturas de las posturas libro (`FoldBookPane`) y mesa (`FoldPane`) en iOS y Android en el README.
+- Capturas de las posturas libro (`FoldBookPane`) y mesa (`FoldPane`) en iOS y Android en el README, incluidas en `media/` del paquete y servidas por unpkg.
 
 ### Cambiado
 
