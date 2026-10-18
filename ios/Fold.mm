@@ -30,6 +30,7 @@
 @property (nonatomic, strong) id hingeInteraction;
 @property (nonatomic, strong) id hinge;
 @property (nonatomic, assign) NSInteger attachAttempts;
+@property (nonatomic, assign) BOOL isInvalidated;
 @end
 
 @implementation Fold
@@ -88,6 +89,9 @@
 
 - (void)attachHinge API_AVAILABLE(ios(27.1))
 {
+  if (self.isInvalidated) {
+    return;
+  }
   UIWindow *window = [self keyWindow];
   if (window == nil) {
     if (self.attachAttempts >= 20) {
@@ -167,6 +171,22 @@
 }
 
 #endif
+
+- (void)invalidate
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    self.isInvalidated = YES;
+    FoldHostView *hostView = self.hostView;
+    hostView.onLayout = nil;
+    if (self.hingeInteraction != nil) {
+      [hostView removeInteraction:self.hingeInteraction];
+    }
+    [hostView removeFromSuperview];
+    self.hostView = nil;
+    self.hingeInteraction = nil;
+    self.hinge = nil;
+  });
+}
 
 - (NSDictionary *)getFoldState
 {
