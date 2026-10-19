@@ -30,7 +30,7 @@
 @property (nonatomic, strong) id hingeInteraction;
 @property (nonatomic, strong) id hinge;
 @property (nonatomic, assign) NSInteger attachAttempts;
-@property (nonatomic, assign) BOOL isInvalidated;
+@property (atomic, assign) BOOL isInvalidated;
 @end
 
 @implementation Fold
@@ -118,8 +118,12 @@
 
   UIHingeInteraction *interaction =
     [[UIHingeInteraction alloc] initWithUpdateHandler:^(UIHingeInteraction *i, UIHingeInteractionUpdate *update) {
-      weakSelf.hinge = update.hinge;
-      [weakSelf refreshState];
+      __typeof(self) strongSelf = weakSelf;
+      if (strongSelf == nil || strongSelf.isInvalidated) {
+        return;
+      }
+      strongSelf.hinge = update.hinge;
+      [strongSelf refreshState];
     }];
   self.hingeInteraction = interaction;
   [hostView addInteraction:interaction];
@@ -127,12 +131,17 @@
 
 - (void)refreshState API_AVAILABLE(ios(27.1))
 {
-  NSDictionary *state = [self currentState];
-  if ([state isEqualToDictionary:self.lastState]) {
+  if (self.isInvalidated) {
     return;
   }
-  self.lastState = state;
-  [self emitOnFoldChange:state];
+  NSDictionary *state = [self currentState];
+  @synchronized(self) {
+    if (self.isInvalidated || [state isEqualToDictionary:self.lastState]) {
+      return;
+    }
+    self.lastState = state;
+    [self emitOnFoldChange:state];
+  }
 }
 
 - (NSDictionary *)currentState API_AVAILABLE(ios(27.1))
@@ -174,11 +183,14 @@
 
 - (void)invalidate
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
+  @synchronized(self) {
     self.isInvalidated = YES;
+  }
+  dispatch_async(dispatch_get_main_queue(), ^{
     FoldHostView *hostView = self.hostView;
     hostView.onLayout = nil;
     if (self.hingeInteraction != nil) {
+      [self.hingeInteraction setEnabled:NO];
       [hostView removeInteraction:self.hingeInteraction];
     }
     [hostView removeFromSuperview];
