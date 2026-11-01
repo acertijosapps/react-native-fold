@@ -1,6 +1,6 @@
-import { Text, View } from 'react-native';
+import { Text, useWindowDimensions, View } from 'react-native';
 
-import { afterEach, describe, expect, it, jest } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react-native';
 
 import FoldBookPane, { type FoldBookPaneProps } from '../FoldBookPane';
@@ -8,12 +8,21 @@ import type { FoldState } from '../types';
 import { useFold } from '../useFold';
 
 jest.mock('../useFold', () => ({ useFold: jest.fn() }));
+jest.mock('react-native/Libraries/Utilities/useWindowDimensions', () => ({
+    __esModule: true,
+    default: jest.fn(),
+}));
 
 type MeasureInWindow = (
     callback: (x: number, y: number, width: number, height: number) => void,
 ) => void;
 
 const mockedUseFold = jest.mocked(useFold);
+const mockedUseWindowDimensions = jest.mocked(useWindowDimensions);
+
+const mockWindow = (width: number, height: number): void => {
+    mockedUseWindowDimensions.mockReturnValue({ width, height, scale: 2, fontScale: 1 });
+};
 
 const mockPaneFrame = (x: number, width: number): void => {
     const { prototype } = View as unknown as { prototype: { measureInWindow: MeasureInWindow } };
@@ -39,6 +48,10 @@ const renderPane = (props: Partial<FoldBookPaneProps> = {}) =>
             {...props}
         />,
     );
+
+beforeEach(() => {
+    mockWindow(951, 669);
+});
 
 afterEach(() => {
     jest.restoreAllMocks();
@@ -127,5 +140,109 @@ describe('FoldBookPane', () => {
         await renderPane();
 
         expect(screen.getByTestId('fallback')).toBeTruthy();
+    });
+
+    describe('splitWhenWide', () => {
+        it('splits in half on a wide window without a fold', async () => {
+            mockedUseFold.mockReturnValue(null);
+            mockWindow(1280, 800);
+            mockPaneFrame(0, 1280);
+
+            await renderPane({ splitWhenWide: true });
+
+            const startPanel = screen.getByTestId('start').parent;
+            const [, spacer] = startPanel?.parent?.children ?? [];
+
+            expect(startPanel?.props.style).toEqual({ width: 640 });
+            expect(typeof spacer === 'string' ? null : spacer?.props.style).toEqual({ width: 0 });
+            expect(screen.getByTestId('end').parent?.props.style).toEqual({ flex: 1 });
+            expect(screen.queryByTestId('fallback')).toBeNull();
+        });
+
+        it('splits in half over a flat non separating fold', async () => {
+            mockedUseFold.mockReturnValue(book({ isHalfOpened: false, isSeparating: false }));
+            mockWindow(900, 700);
+            mockPaneFrame(0, 900);
+
+            await renderPane({ splitWhenWide: true });
+
+            expect(screen.getByTestId('start').parent?.props.style).toEqual({ width: 450 });
+        });
+
+        it('keeps the fallback without the prop', async () => {
+            mockedUseFold.mockReturnValue(null);
+            mockWindow(1280, 800);
+            mockPaneFrame(0, 1280);
+
+            await renderPane();
+
+            expect(screen.getByTestId('fallback')).toBeTruthy();
+        });
+
+        it('keeps the fallback on a tablet in portrait', async () => {
+            mockedUseFold.mockReturnValue(null);
+            mockWindow(800, 1280);
+            mockPaneFrame(0, 800);
+
+            await renderPane({ splitWhenWide: true });
+
+            expect(screen.getByTestId('fallback')).toBeTruthy();
+        });
+
+        it('keeps the fallback on a phone in landscape', async () => {
+            mockedUseFold.mockReturnValue(null);
+            mockWindow(915, 412);
+            mockPaneFrame(0, 915);
+
+            await renderPane({ splitWhenWide: true });
+
+            expect(screen.getByTestId('fallback')).toBeTruthy();
+        });
+
+        it('keeps the fallback while a horizontal hinge separates', async () => {
+            mockedUseFold.mockReturnValue(
+                book({
+                    orientation: 'horizontal',
+                    bounds: { x: 0, y: 456, width: 1280, height: 40 },
+                }),
+            );
+            mockWindow(1280, 951);
+            mockPaneFrame(0, 1280);
+
+            await renderPane({ splitWhenWide: true });
+
+            expect(screen.getByTestId('fallback')).toBeTruthy();
+        });
+
+        it('prefers the hinge split over the wide split', async () => {
+            mockedUseFold.mockReturnValue(book());
+            mockWindow(951, 669);
+            mockPaneFrame(0, 951);
+
+            await renderPane({ splitWhenWide: true });
+
+            expect(screen.getByTestId('start').parent?.props.style).toEqual({ width: 455.5 });
+        });
+
+        it('keeps the same panel views when switching from the hinge to the wide split', async () => {
+            mockedUseFold.mockReturnValue(book());
+            mockWindow(951, 669);
+            mockPaneFrame(0, 951);
+            const { rerender } = await renderPane({ splitWhenWide: true });
+            const startPanel = screen.getByTestId('start').parent;
+
+            mockedUseFold.mockReturnValue(book({ isHalfOpened: false, isSeparating: false }));
+            await rerender(
+                <FoldBookPane
+                    splitWhenWide
+                    start={<Text testID="start">start</Text>}
+                    end={<Text testID="end">end</Text>}
+                    fallback={<Text testID="fallback">fallback</Text>}
+                />,
+            );
+
+            expect(screen.getByTestId('start').parent).toBe(startPanel);
+            expect(startPanel?.props.style).toEqual({ width: 475.5 });
+        });
     });
 });

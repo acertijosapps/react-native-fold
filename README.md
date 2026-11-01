@@ -88,6 +88,24 @@ Both take `splitWhen` (`FoldSplitWhen`):
   single-screen Android foldables `isSeparating` is only true when half opened.
 - `'halfOpened'` also requires `isHalfOpened`, the 1.0 behavior.
 
+### Tablets and wide windows
+
+`FoldBookPane` takes `splitWhenWide` (default `false`). When there is no separating hinge and
+the window is at least **840 × 480 dp** (Material's expanded width, without a compact height),
+it splits `start` | `end` 50/50 with no spacer:
+
+```tsx
+<FoldBookPane splitWhenWide start={<List />} end={<Detail />} fallback={<List />} />
+```
+
+- Tablets split in landscape and keep `fallback` in portrait; phones in landscape stay single
+  pane because their height is compact.
+- It reads the window (`useWindowDimensions`), so iPad Split View, Stage Manager and Android
+  multi-window resize it correctly; a flat foldable's inner display counts as a small tablet.
+- A real hinge always wins: a separating vertical hinge splits at the hinge, and a separating
+  horizontal one keeps `fallback` so a nested `FoldPane` can take the tabletop posture.
+- `useFold()` is not affected: it still reports only physical hinges.
+
 ## Platform support
 
 - Android: `WindowInfoTrackerCallbackAdapter` + `FoldingFeature` (`androidx.window` 1.5.1).

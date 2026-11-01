@@ -160,6 +160,7 @@ const InboxScreen = (): React.JSX.Element => {
         <View style={styles.screen}>
             <FoldStatusBar />
             <FoldBookPane
+                splitWhenWide
                 start={list}
                 end={detail}
                 fallback={
