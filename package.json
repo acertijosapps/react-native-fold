@@ -47,12 +47,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/acertijoslibs/rnfold.git"
+    "url": "git+https://github.com/acertijosapps/react-native-fold.git"
   },
   "author": "AcertijosApps <acertijos.contacto@gmail.com> (https://acertijosapps.com/librerias/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/acertijoslibs/rnfold/-/issues"
+    "url": "https://github.com/acertijosapps/react-native-fold/issues"
   },
   "homepage": "https://acertijosapps.com/librerias/",
   "publishConfig": {

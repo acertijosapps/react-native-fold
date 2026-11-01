@@ -39,13 +39,13 @@ yarn test               # run the Jest suite
 
 Two permanent branches, both protected:
 
-- **`main`** — production. No direct pushes; changes land only through an approved Merge Request.
+- **`main`** — production. No direct pushes; changes land only through an approved Pull Request.
 - **`beta`** — release candidate.
 
 Temporary branches, always created from `beta`, in kebab-case:
 
-- `feat/<name>` · `fix/<name>` · `chore/<name>` → Merge Request **into `beta`**, deleted after merge.
-- `hotfix/<name>` is the only exception: created from `main`, MR into `main`, then back-merged into `beta`.
+- `feat/<name>` · `fix/<name>` · `chore/<name>` → Pull Request **into `beta`**, deleted after merge.
+- `hotfix/<name>` is the only exception: created from `main`, PR into `main`, then back-merged into `beta`.
 
 One branch = one focused change.
 
@@ -72,9 +72,9 @@ One-off bypass (not recommended): `git commit --no-verify`.
 
 Any change that affects behavior updates [`CHANGELOG.md`](./CHANGELOG.md) ([Keep a Changelog](https://keepachangelog.com/)): add the entry under `## [Sin liberar]` in the right category (Añadido · Cambiado · Corregido · Eliminado).
 
-## Merge Requests
+## Pull Requests
 
-When opening an MR:
+When opening a PR:
 
 - Target `beta` (or `main` only for `hotfix`).
 - Keep it small and focused on one change.

@@ -8,6 +8,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 ### Añadido
 
 ### Cambiado
+- El repositorio se mudó de GitLab a GitHub (`acertijosapps/react-native-fold`): `repository` y `bugs` de `package.json`, `source` del podspec y la guía de contribución (Pull Requests).
 
 ### Corregido
 
