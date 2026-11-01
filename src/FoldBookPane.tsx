@@ -1,5 +1,5 @@
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { type HostInstance, StyleSheet, View } from 'react-native';
+import { type HostInstance, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import type { FoldSplitWhen } from './types';
 import { useFold } from './useFold';
@@ -9,7 +9,11 @@ export type FoldBookPaneProps = {
     end: ReactNode;
     fallback: ReactNode;
     splitWhen?: FoldSplitWhen;
+    splitWhenWide?: boolean;
 };
+
+const WIDE_MIN_WIDTH = 840;
+const WIDE_MIN_HEIGHT = 480;
 
 type PaneFrame = {
     x: number;
@@ -21,8 +25,10 @@ const FoldBookPane = ({
     end,
     fallback,
     splitWhen = 'separating',
+    splitWhenWide = false,
 }: FoldBookPaneProps): React.JSX.Element => {
     const fold = useFold();
+    const windowSize = useWindowDimensions();
     const paneRef = useRef<HostInstance>(null);
     const [frame, setFrame] = useState<PaneFrame | null>(null);
 
@@ -41,7 +47,7 @@ const FoldBookPane = ({
     }, [fold, measure]);
 
     const left = fold != null && frame != null ? fold.bounds.x - frame.x : 0;
-    const isSplit =
+    const isFoldSplit =
         fold != null &&
         frame != null &&
         fold.isSeparating &&
@@ -49,22 +55,38 @@ const FoldBookPane = ({
         fold.orientation === 'vertical' &&
         left > 0 &&
         left + fold.bounds.width < frame.width;
+    const isWideSplit =
+        !isFoldSplit &&
+        splitWhenWide &&
+        (fold == null || !fold.isSeparating) &&
+        windowSize.width >= WIDE_MIN_WIDTH &&
+        windowSize.height >= WIDE_MIN_HEIGHT;
+
+    let content: ReactNode = fallback;
+    if (isFoldSplit) {
+        content = (
+            <>
+                <View style={{ width: left }}>{start}</View>
+                <View style={{ width: fold.bounds.width }} />
+                <View style={styles.fill}>{end}</View>
+            </>
+        );
+    } else if (isWideSplit) {
+        content = (
+            <>
+                <View style={styles.fill}>{start}</View>
+                <View style={styles.fill}>{end}</View>
+            </>
+        );
+    }
 
     return (
         <View
             ref={paneRef}
-            style={isSplit ? styles.row : styles.container}
+            style={isFoldSplit || isWideSplit ? styles.row : styles.container}
             onLayout={measure}
         >
-            {isSplit ? (
-                <>
-                    <View style={{ width: left }}>{start}</View>
-                    <View style={{ width: fold.bounds.width }} />
-                    <View style={styles.fill}>{end}</View>
-                </>
-            ) : (
-                fallback
-            )}
+            {content}
         </View>
     );
 };

@@ -7,6 +7,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 
 ### Añadido
 - Prop `splitWhen` (`'separating' | 'halfOpened'`) en `FoldPane` y `FoldBookPane`, y el tipo `FoldSplitWhen`.
+- Prop `splitWhenWide` en `FoldBookPane`: sin bisagra que separe y con la ventana de al menos 840 × 480 dp, divide `start` | `end` al 50 %. Sirve para tablets en horizontal; `useFold()` no cambia.
 
 ### Cambiado
 - `FoldPane` y `FoldBookPane` dividen siempre que la bisagra separa el contenido (`isSeparating`), también con el dispositivo completamente abierto; antes exigían además `isHalfOpened`. En plegables Android de una pantalla no cambia nada. Para el comportamiento anterior: `splitWhen="halfOpened"`.
