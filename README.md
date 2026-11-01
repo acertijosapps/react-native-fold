@@ -116,6 +116,14 @@ it splits `start` | `end` 50/50 with no spacer:
   `PartiallyOpen`. On the cover display there is no division region and `useFold()` is `null`;
   below iOS 27.1 it is always `null`.
 
+## Author
+
+Made by [AcertijosApps](https://acertijosapps.com/librerias). See the rest of our libraries at
+[acertijosapps.com/librerias](https://acertijosapps.com/librerias).
+
+Questions or proposals: [acertijos.contacto@gmail.com](mailto:acertijos.contacto@gmail.com) or open an
+[issue](https://github.com/acertijosapps/react-native-fold/issues).
+
 ## License
 
 MIT
