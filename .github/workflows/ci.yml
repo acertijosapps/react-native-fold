@@ -44,5 +44,5 @@ jobs:
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
       - run: yarn install --immutable
-      - run: ./gradlew :react-native-fold:compileDebugKotlin
+      - run: ./gradlew :acertijosapps_react-native-fold:compileDebugKotlin
         working-directory: example/android
