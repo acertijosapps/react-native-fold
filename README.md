@@ -72,15 +72,21 @@ type FoldState = {
 `bounds` is always in dp: Android divides by density in Kotlin; iOS points are already
 density-independent.
 
-`FoldPane` splits only when `isSeparating && isHalfOpened && orientation === 'horizontal'`,
-and falls back when the hinge is not strictly inside the pane. It measures its own position
+`FoldPane` splits only when `isSeparating && orientation === 'horizontal'`, and falls back when the hinge is not strictly inside the pane. It measures its own position
 in the window, so panels line up with the hinge even below a header; the spacer takes the
 hinge height and it never splits 50/50.
 
 `FoldBookPane` is the book-posture counterpart: it splits `start` | `end` side by side only
-when `isSeparating && isHalfOpened && orientation === 'vertical'`, measures its own x offset
+when `isSeparating && orientation === 'vertical'`, measures its own x offset
 in the window and reserves `bounds.width` between both panels (the fold plus its margins on
 iOS, the fold line on Android). Nest `FoldPane` as its `fallback` to cover both postures.
+
+Both take `splitWhen` (`FoldSplitWhen`):
+
+- `'separating'` (default) splits whenever the hinge separates the content: half opened, or a
+  fully open device whose hinge still divides the screen (dual-screen devices). On
+  single-screen Android foldables `isSeparating` is only true when half opened.
+- `'halfOpened'` also requires `isHalfOpened`, the 1.0 behavior.
 
 ## Platform support
 

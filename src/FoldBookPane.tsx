@@ -1,12 +1,14 @@
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { type HostInstance, StyleSheet, View } from 'react-native';
 
+import type { FoldSplitWhen } from './types';
 import { useFold } from './useFold';
 
 export type FoldBookPaneProps = {
     start: ReactNode;
     end: ReactNode;
     fallback: ReactNode;
+    splitWhen?: FoldSplitWhen;
 };
 
 type PaneFrame = {
@@ -14,7 +16,12 @@ type PaneFrame = {
     width: number;
 };
 
-const FoldBookPane = ({ start, end, fallback }: FoldBookPaneProps): React.JSX.Element => {
+const FoldBookPane = ({
+    start,
+    end,
+    fallback,
+    splitWhen = 'separating',
+}: FoldBookPaneProps): React.JSX.Element => {
     const fold = useFold();
     const paneRef = useRef<HostInstance>(null);
     const [frame, setFrame] = useState<PaneFrame | null>(null);
@@ -38,7 +45,7 @@ const FoldBookPane = ({ start, end, fallback }: FoldBookPaneProps): React.JSX.El
         fold != null &&
         frame != null &&
         fold.isSeparating &&
-        fold.isHalfOpened &&
+        (splitWhen === 'separating' || fold.isHalfOpened) &&
         fold.orientation === 'vertical' &&
         left > 0 &&
         left + fold.bounds.width < frame.width;

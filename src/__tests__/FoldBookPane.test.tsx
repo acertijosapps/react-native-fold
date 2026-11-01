@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react-native';
 
-import FoldBookPane from '../FoldBookPane';
+import FoldBookPane, { type FoldBookPaneProps } from '../FoldBookPane';
 import type { FoldState } from '../types';
 import { useFold } from '../useFold';
 
@@ -30,12 +30,13 @@ const book = (overrides: Partial<NonNullable<FoldState>> = {}): FoldState => ({
     ...overrides,
 });
 
-const renderPane = () =>
+const renderPane = (props: Partial<FoldBookPaneProps> = {}) =>
     render(
         <FoldBookPane
             start={<Text testID="start">start</Text>}
             end={<Text testID="end">end</Text>}
             fallback={<Text testID="fallback">fallback</Text>}
+            {...props}
         />,
     );
 
@@ -97,6 +98,24 @@ describe('FoldBookPane', () => {
         mockPaneFrame(0, 951);
 
         await renderPane();
+
+        expect(screen.getByTestId('fallback')).toBeTruthy();
+    });
+
+    it('splits around a separating hinge on a fully open device', async () => {
+        mockedUseFold.mockReturnValue(book({ isHalfOpened: false }));
+        mockPaneFrame(0, 951);
+
+        await renderPane();
+
+        expect(screen.getByTestId('start').parent?.props.style).toEqual({ width: 455.5 });
+    });
+
+    it('falls back on a fully open device when splitWhen is halfOpened', async () => {
+        mockedUseFold.mockReturnValue(book({ isHalfOpened: false }));
+        mockPaneFrame(0, 951);
+
+        await renderPane({ splitWhen: 'halfOpened' });
 
         expect(screen.getByTestId('fallback')).toBeTruthy();
     });
