@@ -80,7 +80,7 @@ When opening a PR:
 - Keep it small and focused on one change.
 - Assign at least one reviewer; merge requires their approval.
 - Link the related work item for traceability.
-- Gates must be green: `yarn typecheck`, `yarn lint`, `yarn test`.
+- Gates must be green: `yarn typecheck`, `yarn lint`, `yarn test`. CI ([`.github/workflows/ci.yml`](./.github/workflows/ci.yml)) runs them on every PR to `beta` or `main`, plus the library build and the Android module compile.
 - Include the `CHANGELOG.md` entry.
 
 ## Releasing (`beta` → `main`)
