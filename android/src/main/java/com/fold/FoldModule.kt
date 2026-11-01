@@ -26,14 +26,18 @@ class FoldModule(reactContext: ReactApplicationContext) :
     val height: Double
   )
 
-  private val tracker =
-    WindowInfoTrackerCallbackAdapter(WindowInfoTracker.getOrCreate(reactContext))
+  private val windowInfoTracker = WindowInfoTracker.getOrCreate(reactContext)
+
+  private val tracker = WindowInfoTrackerCallbackAdapter(windowInfoTracker)
 
   private val executor: Executor = ContextCompat.getMainExecutor(reactContext)
 
   @Volatile private var lastData = FoldData(false, false, false, "horizontal", 0.0, 0.0, 0.0, 0.0)
 
+  @Volatile private var hasLayoutInfo = false
+
   private val consumer = Consumer<WindowLayoutInfo> { layoutInfo ->
+    hasLayoutInfo = true
     lastData = buildData(layoutInfo)
     emitOnFoldChange(toWritableMap(lastData))
   }
@@ -42,7 +46,17 @@ class FoldModule(reactContext: ReactApplicationContext) :
     reactContext.addLifecycleEventListener(this)
   }
 
-  override fun getFoldState(): WritableMap = toWritableMap(lastData)
+  override fun getFoldState(): WritableMap {
+    if (!hasLayoutInfo) {
+      readCurrentLayoutInfo()?.let { lastData = buildData(it) }
+    }
+    return toWritableMap(lastData)
+  }
+
+  private fun readCurrentLayoutInfo(): WindowLayoutInfo? {
+    val activity = reactApplicationContext.currentActivity ?: return null
+    return runCatching { windowInfoTracker.getCurrentWindowLayoutInfo(activity) }.getOrNull()
+  }
 
   override fun onHostResume() {
     val activity = reactApplicationContext.currentActivity ?: return
