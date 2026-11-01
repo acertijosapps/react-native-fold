@@ -6,6 +6,16 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 ## [Sin liberar]
 
 ### Añadido
+
+### Cambiado
+
+### Corregido
+
+### Eliminado
+
+## [1.1.0] - 2026-11-01
+
+### Añadido
 - Prop `splitWhen` (`'separating' | 'halfOpened'`) en `FoldPane` y `FoldBookPane`, y el tipo `FoldSplitWhen`.
 - Prop `splitWhenWide` en `FoldBookPane`: sin bisagra que separe y con la ventana de al menos 840 × 480 dp, divide `start` | `end` al 50 %. Sirve para tablets en horizontal; `useFold()` no cambia.
 - CI en GitHub Actions para cada PR y push a `beta` y `main`: typecheck, lint, tests, build de la librería y compilación del módulo Android.
@@ -16,8 +26,6 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 
 ### Corregido
 - Android: `getFoldState()` ya no devuelve "sin bisagra" antes del primer evento de `WindowInfoTracker`; lee el layout actual con `getCurrentWindowLayoutInfo`, así que el primer render de `FoldProvider` ya trae la bisagra en vez de saltar de `null` al estado real.
-
-### Eliminado
 
 ## [1.0.1] - 2026-10-19
 
