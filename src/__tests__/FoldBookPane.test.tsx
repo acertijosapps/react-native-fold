@@ -150,7 +150,11 @@ describe('FoldBookPane', () => {
 
             await renderPane({ splitWhenWide: true });
 
-            expect(screen.getByTestId('start').parent?.props.style).toEqual({ flex: 1 });
+            const startPanel = screen.getByTestId('start').parent;
+            const [, spacer] = startPanel?.parent?.children ?? [];
+
+            expect(startPanel?.props.style).toEqual({ width: 640 });
+            expect(typeof spacer === 'string' ? null : spacer?.props.style).toEqual({ width: 0 });
             expect(screen.getByTestId('end').parent?.props.style).toEqual({ flex: 1 });
             expect(screen.queryByTestId('fallback')).toBeNull();
         });
@@ -162,7 +166,7 @@ describe('FoldBookPane', () => {
 
             await renderPane({ splitWhenWide: true });
 
-            expect(screen.getByTestId('start').parent?.props.style).toEqual({ flex: 1 });
+            expect(screen.getByTestId('start').parent?.props.style).toEqual({ width: 450 });
         });
 
         it('keeps the fallback without the prop', async () => {
@@ -218,6 +222,27 @@ describe('FoldBookPane', () => {
             await renderPane({ splitWhenWide: true });
 
             expect(screen.getByTestId('start').parent?.props.style).toEqual({ width: 455.5 });
+        });
+
+        it('keeps the same panel views when switching from the hinge to the wide split', async () => {
+            mockedUseFold.mockReturnValue(book());
+            mockWindow(951, 669);
+            mockPaneFrame(0, 951);
+            const { rerender } = await renderPane({ splitWhenWide: true });
+            const startPanel = screen.getByTestId('start').parent;
+
+            mockedUseFold.mockReturnValue(book({ isHalfOpened: false, isSeparating: false }));
+            await rerender(
+                <FoldBookPane
+                    splitWhenWide
+                    start={<Text testID="start">start</Text>}
+                    end={<Text testID="end">end</Text>}
+                    fallback={<Text testID="fallback">fallback</Text>}
+                />,
+            );
+
+            expect(screen.getByTestId('start').parent).toBe(startPanel);
+            expect(startPanel?.props.style).toEqual({ width: 475.5 });
         });
     });
 });

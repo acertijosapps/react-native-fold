@@ -20,6 +20,11 @@ type PaneFrame = {
     width: number;
 };
 
+type PaneSplit = {
+    start: number;
+    spacer: number;
+};
+
 const FoldBookPane = ({
     start,
     end,
@@ -58,35 +63,33 @@ const FoldBookPane = ({
     const isWideSplit =
         !isFoldSplit &&
         splitWhenWide &&
+        frame != null &&
         (fold == null || !fold.isSeparating) &&
         windowSize.width >= WIDE_MIN_WIDTH &&
         windowSize.height >= WIDE_MIN_HEIGHT;
 
-    let content: ReactNode = fallback;
+    let split: PaneSplit | null = null;
     if (isFoldSplit) {
-        content = (
-            <>
-                <View style={{ width: left }}>{start}</View>
-                <View style={{ width: fold.bounds.width }} />
-                <View style={styles.fill}>{end}</View>
-            </>
-        );
+        split = { start: left, spacer: fold.bounds.width };
     } else if (isWideSplit) {
-        content = (
-            <>
-                <View style={styles.fill}>{start}</View>
-                <View style={styles.fill}>{end}</View>
-            </>
-        );
+        split = { start: frame.width / 2, spacer: 0 };
     }
 
     return (
         <View
             ref={paneRef}
-            style={isFoldSplit || isWideSplit ? styles.row : styles.container}
+            style={split != null ? styles.row : styles.container}
             onLayout={measure}
         >
-            {content}
+            {split != null ? (
+                <>
+                    <View style={{ width: split.start }}>{start}</View>
+                    <View style={{ width: split.spacer }} />
+                    <View style={styles.fill}>{end}</View>
+                </>
+            ) : (
+                fallback
+            )}
         </View>
     );
 };
