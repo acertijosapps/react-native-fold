@@ -6,8 +6,10 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 ## [Sin liberar]
 
 ### Añadido
+- Prop `splitWhen` (`'separating' | 'halfOpened'`) en `FoldPane` y `FoldBookPane`, y el tipo `FoldSplitWhen`.
 
 ### Cambiado
+- `FoldPane` y `FoldBookPane` dividen siempre que la bisagra separa el contenido (`isSeparating`), también con el dispositivo completamente abierto; antes exigían además `isHalfOpened`. En plegables Android de una pantalla no cambia nada. Para el comportamiento anterior: `splitWhen="halfOpened"`.
 - El repositorio se mudó de GitLab a GitHub (`acertijosapps/react-native-fold`): `repository` y `bugs` de `package.json`, `source` del podspec y la guía de contribución (Pull Requests).
 
 ### Corregido
