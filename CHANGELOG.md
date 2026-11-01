@@ -11,6 +11,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/); version
 - El repositorio se mudó de GitLab a GitHub (`acertijosapps/react-native-fold`): `repository` y `bugs` de `package.json`, `source` del podspec y la guía de contribución (Pull Requests).
 
 ### Corregido
+- Android: `getFoldState()` ya no devuelve "sin bisagra" antes del primer evento de `WindowInfoTracker`; lee el layout actual con `getCurrentWindowLayoutInfo`, así que el primer render de `FoldProvider` ya trae la bisagra en vez de saltar de `null` al estado real.
 
 ### Eliminado
 
